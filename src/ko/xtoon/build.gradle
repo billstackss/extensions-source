@@ -1,0 +1,8 @@
+ext {
+    extName = 'Xtoon'
+    extClass = '.Xtoon'
+    extVersionCode = 1
+    isNsfw = true
+}
+
+apply plugin: "kei.plugins.extension.legacy"
