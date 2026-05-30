@@ -31,14 +31,14 @@ jobs:
       - name: Build Xtoon
         run: ./gradlew :src:ko:xtoon:assembleDebug
 
-      # 🌐 주소판 구조 완벽 세팅 (Komikku 및 Mihon 공용 규격)
+      # 🌐 Komikku가 무조건 인식하는 대형 마켓 표준 규격으로 생성
       - name: Create Repo Structure
         run: |
           mkdir -p repo_dist/apk
           find src/ko/xtoon/build/outputs/apk/ -name "*.apk" -exec cp {} repo_dist/apk/xtoon-debug.apk \;
-          echo '{"name":"Xtoon Custom Repo","extensions":[{"name":"Xtoon","pkg":"eu.kanade.tachiyomi.extension.ko.xtoon","apk":"xtoon-debug.apk","versionCode":1,"version":"1.0","nsfw":1,"lang":"ko"}]}' > repo_dist/index.min.json
+          echo '[{"name":"Xtoon","pkg":"eu.kanade.tachiyomi.extension.ko.xtoon","apk":"apk/xtoon-debug.apk","versionCode":1,"version":"1.0","nsfw":1,"lang":"ko"}]' > repo_dist/index.min.json
 
-      # 🚀 생성된 주소판을 별도의 'repo' 공간에 강제 업로드
+      # 🚀 생성된 주소판을 repo 공간에 업로드
       - name: Deploy to repo branch
         uses: JamesIves/github-pages-deploy-action@v4
         with:
