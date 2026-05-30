@@ -1,10 +1,13 @@
-name: Build Xtoon APK
+name: Build and Deploy Xtoon Repo
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -22,15 +25,23 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      # 🛠️ 이 단계가 추가되어 띄어쓰기 오류를 로봇이 스스로 고치게 만듭니다.
       - name: Fix Code Formatting
         run: ./gradlew spotlessApply
 
       - name: Build Xtoon
         run: ./gradlew :src:ko:xtoon:assembleDebug
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
+      # 🌐 Mihon 앱이 읽을 수 있는 주소판(JSON)과 파일 저장소 만들기
+      - name: Create Repo Structure
+        run: |
+          mkdir -p repo_dist
+          find src/ko/xtoon/build/outputs/apk/ -name "*.apk" -exec cp {} repo_dist/xtoon-debug.apk \;
+          echo '[{"name":"Xtoon","pkg":"eu.kanade.tachiyomi.extension.ko.xtoon","apk":"xtoon-debug.apk","versionCode":1,"version":"1.0","nsfw":1,"lang":"ko"}]' > repo_dist/index.min.json
+
+      # 🚀 생성된 주소판을 별도의 'repo' 공간에 자동으로 업로드
+      - name: Deploy to repo branch
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          name: xtoon-apk
-          path: "**/*.apk"
+          folder: repo_dist
+          branch: repo
+          token: ${{ secrets.GITHUB_TOKEN }}
