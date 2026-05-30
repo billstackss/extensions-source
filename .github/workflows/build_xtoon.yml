@@ -22,6 +22,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      # 🛠️ 이 단계가 추가되어 띄어쓰기 오류를 로봇이 스스로 고치게 만듭니다.
+      - name: Fix Code Formatting
+        run: ./gradlew spotlessApply
+
       - name: Build Xtoon
         run: ./gradlew :src:ko:xtoon:assembleDebug
 
